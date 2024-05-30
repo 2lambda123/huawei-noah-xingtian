@@ -100,6 +100,7 @@ class Controller(object):
 
     @property
     def tasks(self):
+        """ """
         return self._main_task
 
     def recv_broker_task(self):
@@ -190,7 +191,11 @@ class Controller(object):
                 debug_within_interval(**kwargs)
 
     def add_task(self, learner_obj):
-        """Add learner task into Broker."""
+        """Add learner task into Broker.
+
+        :param learner_obj: 
+
+        """
         self._main_task.append(learner_obj)
 
     def register(self, cmd, direction, comm_q=None):
@@ -198,10 +203,12 @@ class Controller(object):
 
         :param cmd: name to register.
         :type cmd: str
-         :param direction: direction relate to broker.
+        :param direction: direction relate to broker.
         :type direction: str
-        :return:  stub of the local queue with registered.
+        :param comm_q:  (Default value = None)
+        :returns: stub of the local queue with registered.
         :rtype: option
+
         """
         if not comm_q:
             comm_q = UniComm("LocalMsg")
@@ -219,6 +226,7 @@ class Controller(object):
             raise KeyError("invalid register key: {}".format(direction))
 
     def alloc_actor(self):
+        """ """
         while True:
             time.sleep(10)
             if not self.send_local_q.get("train"):
@@ -231,6 +239,11 @@ class Controller(object):
                 self.send_alloc_msg("increase")
 
     def send_alloc_msg(self, actor_status):
+        """
+
+        :param actor_status: 
+
+        """
         alloc_cmd = {
             "ctr_info": {"cmd": actor_status, "actor_id": -1, "explorer_id": -1}
         }
@@ -238,6 +251,11 @@ class Controller(object):
             q.send(alloc_cmd["ctr_info"], alloc_cmd["data"])
 
     def close(self, close_cmd):
+        """
+
+        :param close_cmd: 
+
+        """
         for broker_item in self.send_broker:
             broker_item.send(close_cmd["ctr_info"], close_cmd["data"])
 
@@ -252,11 +270,12 @@ class Controller(object):
         self.start_data_transfer()
 
     def tasks_loop(self):
-        """
-        Create the tasks_loop after ready the messy setup works.
-
+        """Create the tasks_loop after ready the messy setup works.
+        
         The foreground task of Controller.
         :return:
+
+
         """
         if not self._main_task:
             logging.fatal("Without learning process ready!")
@@ -325,7 +344,11 @@ class Broker(object):
         data_transfer_thread.start()
 
     def _setup_share_qs_firstly(self, config_info):
-        """Setup only once time."""
+        """Setup only once time.
+
+        :param config_info: 
+
+        """
         if self.recv_explorer_q_ready:
             return
 
@@ -436,13 +459,25 @@ class Broker(object):
 
     @staticmethod
     def _handle_data(ctr_info, data, explorer_stub, broker_stub):
+        """
+
+        :param ctr_info: 
+        :param data: 
+        :param explorer_stub: 
+        :param broker_stub: 
+
+        """
         object_id = ctr_info["object_id"]
         ctr_info_data = ctr_info["ctr_info_data"]
         broker_stub.send_bytes(ctr_info_data, data)
         explorer_stub.delete(object_id)
 
     def _step_explorer_msg(self, use_single_stub):
-        """Yield local msg received."""
+        """Yield local msg received.
+
+        :param use_single_stub: 
+
+        """
 
         if use_single_stub:
             # whole explorer share single plasma
@@ -490,7 +525,11 @@ class Broker(object):
             )
 
     def create_explorer(self, config_info):
-        """Create explorer."""
+        """Create explorer.
+
+        :param config_info: 
+
+        """
         env_para = config_info.get("env_para")
         env_num = config_info.get("env_num")
         speedup = config_info.get("speedup", True)
@@ -519,7 +558,11 @@ class Broker(object):
         self.explore_process.update({env_id: p})
 
     def create_evaluator(self, config_info):
-        """Create evaluator."""
+        """Create evaluator.
+
+        :param config_info: 
+
+        """
         test_id = config_info.get("test_id")
         send_evaluator = Queue()
 
@@ -550,7 +593,11 @@ class Broker(object):
         self.explore_process.update({test_id: p})
 
     def alloc(self, actor_status):
-        """Monitor system and adjust resource."""
+        """Monitor system and adjust resource.
+
+        :param actor_status: 
+
+        """
         p_id = [_p.pid for _, _p in self.explore_process.items()]
         p = [psutil.Process(_pid) for _pid in p_id]
 
@@ -570,7 +617,11 @@ class Broker(object):
                 resume_p.resume()
 
     def close(self, close_cmd):
-        """Close broker."""
+        """Close broker.
+
+        :param close_cmd: 
+
+        """
         for _, send_q in self.send_explorer_q.items():
             send_q.put(close_cmd)
         time.sleep(2)
@@ -592,7 +643,11 @@ class Broker(object):
 
 
 def stats_id(ctr_info):
-    """Assemble the id for record stats information."""
+    """Assemble the id for record stats information.
+
+    :param ctr_info: 
+
+    """
     return "B{}E{}{}".format(
         ctr_info["broker_id"], ctr_info["explorer_id"], ctr_info["cmd"]
     )

@@ -25,6 +25,12 @@ from absl import logging
 
 
 def _clip_explorer_id(raw_dist_info, clip_set):
+    """
+
+    :param raw_dist_info: 
+    :param clip_set: 
+
+    """
     if not clip_set:
         return raw_dist_info
 
@@ -46,27 +52,50 @@ def _clip_explorer_id(raw_dist_info, clip_set):
 
 
 class DefaultAlgDistPolicy(object):
+    """ """
     def __init__(self, actor_num, **kwargs):
         self.actor_num = actor_num
         # message {"broker_id": -1, "explorer_id": -1, "agent_id": -1}
         self.default_policy = [{"broker_id": -1, "explorer_id": -1}]
 
     def get_dist_info(self, model_index, explorer_set=None):
+        """
+
+        :param model_index: 
+        :param explorer_set:  (Default value = None)
+
+        """
         return _clip_explorer_id(self.default_policy, explorer_set)
 
     def add_processed_ctr_info(self, ctr_info):
+        """
+
+        :param ctr_info: 
+
+        """
         pass
 
 
 class DivideDistPolicy(DefaultAlgDistPolicy):
+    """ """
     def get_dist_info(self, model_index, explorer_set=None):
+        """
+
+        :param model_index: 
+        :param explorer_set:  (Default value = None)
+
+        """
         if model_index > -1:
             self.default_policy.update({"explorer_id": model_index % self.actor_num})
         return _clip_explorer_id(self.default_policy, explorer_set)
 
 
 def _fetch_broker_info(ctr_relation_buf: defaultdict):
-    """Fetch broker information."""
+    """Fetch broker information.
+
+    :param ctr_relation_buf: defaultdict: 
+
+    """
     ctr_list = list()
     default_policy = {"broker_id": -1, "explorer_id": -1}
     for _broker, _explorer in ctr_relation_buf.items():
@@ -85,9 +114,20 @@ class FIFODistPolicy(DefaultAlgDistPolicy):
         self.prepare_data_times = prepare_times
 
     def add_processed_ctr_info(self, ctr_info):
+        """
+
+        :param ctr_info: 
+
+        """
         self._processed_agent.append(ctr_info)
 
     def get_dist_info(self, model_index, explorer_set=None):
+        """
+
+        :param model_index: 
+        :param explorer_set:  (Default value = None)
+
+        """
         if model_index < 0:
             return self.default_policy
 
@@ -113,9 +153,20 @@ class EqualDistPolicy(DefaultAlgDistPolicy):
         self.prepare_data_times = prepare_times
 
     def add_processed_ctr_info(self, ctr_info):
+        """
+
+        :param ctr_info: 
+
+        """
         self._processed_agent[ctr_info] += 1
 
     def get_dist_info(self, model_index, explorer_set=None):
+        """
+
+        :param model_index: 
+        :param explorer_set:  (Default value = None)
+
+        """
         if model_index < 0:
             return self.default_policy
         ctr_relation_buf = defaultdict(set)
