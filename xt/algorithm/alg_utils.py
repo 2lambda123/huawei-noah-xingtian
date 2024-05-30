@@ -19,8 +19,9 @@
 # THE SOFTWARE.
 """Build general utils for algorithm."""
 
+from collections import defaultdict, deque
+
 from absl import logging
-from collections import deque, defaultdict
 
 
 def _clip_explorer_id(raw_dist_info, clip_set):

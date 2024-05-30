@@ -18,30 +18,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """Broker setup the message tunnel between learner and explorer."""
+import ast
 import os
-import tracemalloc
+import pprint
 import threading
 import time
-import ast
-from multiprocessing import Queue, Process, Manager
-
-import psutil
-import lz4.frame
-import setproctitle
-from pyarrow import deserialize, serialize
-from absl import logging
-import pprint
+import tracemalloc
 from collections import defaultdict
-from xt.framework.explorer import Explorer
-from xt.framework.evaluator import Evaluator
+from multiprocessing import Manager, Process, Queue
+
+import lz4.frame
+import psutil
+import setproctitle
+from absl import logging
+from pyarrow import deserialize, serialize
+
 from xt.framework.broker_stats import BrokerStats
-from zeus.common.ipc.uni_comm import UniComm
+from xt.framework.evaluator import Evaluator
+from xt.framework.explorer import Explorer
+from zeus.common.ipc.message import (get_msg_data, get_msg_info, message,
+                                     set_msg_data)
 from zeus.common.ipc.share_buffer import ShareBuf
-from zeus.common.ipc.message import message, get_msg_info, set_msg_data, get_msg_data
-from zeus.common.util.profile_stats import TimerRecorder, show_memory_stats
-from zeus.common.util.printer import debug_within_interval
+from zeus.common.ipc.uni_comm import UniComm
 from zeus.common.util.default_xt import DebugConf
-from zeus.common.util.get_xt_config import init_main_broker_debug_kwargs, get_pbt_set
+from zeus.common.util.get_xt_config import (get_pbt_set,
+                                            init_main_broker_debug_kwargs)
+from zeus.common.util.printer import debug_within_interval
+from zeus.common.util.profile_stats import TimerRecorder, show_memory_stats
 
 
 class Controller(object):
