@@ -58,9 +58,14 @@ class Controller(object):
 
         self.port_info = {
             "recv": ast.literal_eval(self.recv_broker.info),
-            "send": [ast.literal_eval(_s.info) for _s in self.send_broker]}
+            "send": [ast.literal_eval(_s.info) for _s in self.send_broker],
+        }
 
-        port_info_h = pprint.pformat(self.port_info, indent=0, width=1, )
+        port_info_h = pprint.pformat(
+            self.port_info,
+            indent=0,
+            width=1,
+        )
         logging.info("Init Broker server info:\n{}\n".format(port_info_h))
 
         self.recv_local_q = dict()  # UniComm("LocalMsg")
@@ -70,8 +75,7 @@ class Controller(object):
         self._data_store = dict()
 
         self._main_task = list()
-        self.metric = TimerRecorder(
-            "Controller", maxlen=50, fields=("send", "recv"))
+        self.metric = TimerRecorder("Controller", maxlen=50, fields=("send", "recv"))
         self.stats = BrokerStats()
 
         if DebugConf.trace:
@@ -101,11 +105,11 @@ class Controller(object):
             ctr_info, recv_data = self.recv_broker.recv_bytes()
             _t0 = time.time()
             ctr_info = deserialize(ctr_info)
-            compress_flag = ctr_info.get('compress_flag', False)
+            compress_flag = ctr_info.get("compress_flag", False)
             if compress_flag:
                 recv_data = lz4.frame.decompress(recv_data)
             recv_data = deserialize(recv_data)
-            recv_data = {'ctr_info': ctr_info, 'data': recv_data}
+            recv_data = {"ctr_info": ctr_info, "data": recv_data}
             self.metric.append(recv=time.time() - _t0)
 
             cmd = get_msg_info(recv_data, "cmd")
@@ -113,8 +117,7 @@ class Controller(object):
             if send_cmd:
                 send_cmd.send(recv_data)
             else:
-                logging.warning("invalid cmd: {}, with date: {}".format(
-                    cmd, recv_data))
+                logging.warning("invalid cmd: {}, with date: {}".format(cmd, recv_data))
 
             # report log
             self.metric.report_if_need(field_sets=("send", "recv"))
@@ -124,7 +127,7 @@ class Controller(object):
         while True:
             # polling with whole learner with no wait.
             for cmd, recv_q in self.recv_local_q.items():
-                if 'predict' in cmd:
+                if "predict" in cmd:
                     try:
                         recv_data = recv_q.get(block=False)
                     except:
@@ -140,7 +143,7 @@ class Controller(object):
         """Receive local cmd."""
         # split the case between single receive queue and pbt
         if len(self.recv_local_q) == 1:
-            single_stub, = self.recv_local_q.values()
+            (single_stub,) = self.recv_local_q.values()
         else:
             single_stub = None
 
@@ -172,12 +175,14 @@ class Controller(object):
                 # self.metric.append(debug=time.time() - _t1)
 
                 if broker_id == -1:
-                    for broker_item, node_info in zip(self.send_broker, self.node_config_list):
-                        broker_item.send(
-                            recv_data['ctr_info'], recv_data['data'])
+                    for broker_item, node_info in zip(
+                        self.send_broker, self.node_config_list
+                    ):
+                        broker_item.send(recv_data["ctr_info"], recv_data["data"])
                 else:
                     self.send_broker[broker_id].send(
-                        recv_data['ctr_info'], recv_data['data'])
+                        recv_data["ctr_info"], recv_data["data"]
+                    )
                 self.metric.append(send=time.time() - _t1)
                 debug_within_interval(**kwargs)
 
@@ -227,11 +232,11 @@ class Controller(object):
             "ctr_info": {"cmd": actor_status, "actor_id": -1, "explorer_id": -1}
         }
         for q in self.send_broker:
-            q.send(alloc_cmd['ctr_info'], alloc_cmd['data'])
+            q.send(alloc_cmd["ctr_info"], alloc_cmd["data"])
 
     def close(self, close_cmd):
         for broker_item in self.send_broker:
-            broker_item.send(close_cmd['ctr_info'], close_cmd['data'])
+            broker_item.send(close_cmd["ctr_info"], close_cmd["data"])
 
         # close ctx may mismatch the socket, use the os.exit last.
         # self.recv_broker.close()
@@ -253,8 +258,7 @@ class Controller(object):
         if not self._main_task:
             logging.fatal("Without learning process ready!")
 
-        train_thread = [threading.Thread(
-            target=task.main_loop) for task in self.tasks]
+        train_thread = [threading.Thread(target=task.main_loop) for task in self.tasks]
         for task in train_thread:
             task.start()
             self.stats.add_relation_task(task)
@@ -270,7 +274,7 @@ class Controller(object):
         """Stop all system."""
         close_cmd = message(None, cmd="close")
         for _learner_id, recv_q in self.recv_local_q.items():
-            if 'predict' in _learner_id:
+            if "predict" in _learner_id:
                 continue
             else:
                 recv_q.send(close_cmd)
@@ -311,8 +315,7 @@ class Broker(object):
 
     def start_data_transfer(self):
         """Start transfer data and other thread."""
-        data_transfer_thread = threading.Thread(
-            target=self.recv_controller_task)
+        data_transfer_thread = threading.Thread(target=self.recv_controller_task)
         data_transfer_thread.start()
 
         data_transfer_thread = threading.Thread(target=self.recv_explorer)
@@ -328,9 +331,9 @@ class Broker(object):
 
         for i in range(pbt_size):
             plasma_path = "/tmp/plasma{}T{}".format(os.getpid(), i)
-            self.explorer_share_qs["T{}".format(i)] = UniComm("ShareByPlasma",
-                                                              size=plasma_size,
-                                                              path=plasma_path)
+            self.explorer_share_qs["T{}".format(i)] = UniComm(
+                "ShareByPlasma", size=plasma_size, path=plasma_path
+            )
 
             # print("broker pid:", os.getpid())
             # self.explorer_share_qs["T{}".format(i)].comm.connect()
@@ -350,8 +353,7 @@ class Broker(object):
             # recv, data will deserialize with pyarrow default
             # recv_data = self.recv_controller_q.recv()
             ctr_info, data = self.recv_controller_q.recv_bytes()
-            recv_data = {'ctr_info': deserialize(
-                ctr_info), 'data': deserialize(data)}
+            recv_data = {"ctr_info": deserialize(ctr_info), "data": deserialize(data)}
 
             cmd = get_msg_info(recv_data, "cmd")
             if cmd in ["close"]:
@@ -377,13 +379,12 @@ class Broker(object):
                     if use_pbt:
                         plasma_size = config_set.get("plasma_size", 100000000)
                         plasma_path = "/tmp/plasma{}EVAL0".format(os.getpid())
-                        self.explorer_share_qs["EVAL0"] = UniComm("ShareByPlasma",
-                                                                  size=plasma_size,
-                                                                  path=plasma_path)
+                        self.explorer_share_qs["EVAL0"] = UniComm(
+                            "ShareByPlasma", size=plasma_size, path=plasma_path
+                        )
 
                 config_set.update({"share_path": self._buf.get_path()})
-                logging.debug(
-                    "create evaluator with config:{}".format(config_set))
+                logging.debug("create evaluator with config:{}".format(config_set))
 
                 self.create_evaluator(config_set)
                 # self._buf.plus_one_live()
@@ -405,7 +406,7 @@ class Broker(object):
 
             _t0 = time.time()
 
-            if cmd in ("explore", ):  # todo: could mv to first priority.
+            if cmd in ("explore",):  # todo: could mv to first priority.
                 # here, only handle explore weights
                 buf_id = self._buf.put(data)
                 # replace weight with id
@@ -432,8 +433,8 @@ class Broker(object):
 
     @staticmethod
     def _handle_data(ctr_info, data, explorer_stub, broker_stub):
-        object_id = ctr_info['object_id']
-        ctr_info_data = ctr_info['ctr_info_data']
+        object_id = ctr_info["object_id"]
+        ctr_info_data = ctr_info["ctr_info_data"]
         broker_stub.send_bytes(ctr_info_data, data)
         explorer_stub.delete(object_id)
 
@@ -450,8 +451,7 @@ class Broker(object):
         while True:
             if use_single_stub:
                 ctr_info, data = single_stub.recv_bytes(block=True)
-                self._handle_data(ctr_info, data, single_stub,
-                                  self.send_controller_q)
+                self._handle_data(ctr_info, data, single_stub, self.send_controller_q)
                 yield recv_id, ctr_info
             else:
                 # polling with whole learner with no wait.
@@ -464,8 +464,7 @@ class Broker(object):
                         time.sleep(0.002)
                         continue
 
-                    self._handle_data(ctr_info, data, recv_q,
-                                      self.send_controller_q)
+                    self._handle_data(ctr_info, data, recv_q, self.send_controller_q)
                     yield recv_id, ctr_info
 
     def recv_explorer(self):
@@ -481,8 +480,11 @@ class Broker(object):
             recv_id, _info = next(yield_func)
             _id = stats_id(_info)
             self.explorer_stats[_id] += 1
-            debug_within_interval(logs=dict(self.explorer_stats),
-                                  interval=DebugConf.interval_s, human_able=True)
+            debug_within_interval(
+                logs=dict(self.explorer_stats),
+                interval=DebugConf.interval_s,
+                human_able=True,
+            )
 
     def create_explorer(self, config_info):
         """Create explorer."""
@@ -529,8 +531,9 @@ class Broker(object):
 
         speedup = config_info.get("speedup", False)
         start_core = config_info.get("start_core", 1)
-        eval_num = config_info.get("benchmark", {}).get(
-            "eval", {}).get("evaluator_num", 1)
+        eval_num = (
+            config_info.get("benchmark", {}).get("eval", {}).get("evaluator_num", 1)
+        )
         env_num = config_info.get("env_num")
 
         core_set = env_num + start_core
@@ -587,5 +590,6 @@ class Broker(object):
 
 def stats_id(ctr_info):
     """Assemble the id for record stats information."""
-    return "B{}E{}{}".format(ctr_info["broker_id"], ctr_info["explorer_id"],
-                             ctr_info["cmd"])
+    return "B{}E{}{}".format(
+        ctr_info["broker_id"], ctr_info["explorer_id"], ctr_info["cmd"]
+    )

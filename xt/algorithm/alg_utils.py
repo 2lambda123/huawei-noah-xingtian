@@ -34,7 +34,8 @@ def _clip_explorer_id(raw_dist_info, clip_set):
             broker_item["explorer_id"] = clip_set
         else:
             clipped_id = list(
-                [_id for _id in broker_item["explorer_id"] if _id in clip_set])
+                [_id for _id in broker_item["explorer_id"] if _id in clip_set]
+            )
             broker_item["explorer_id"] = clipped_id
 
         ret.append(broker_item)
@@ -59,8 +60,7 @@ class DefaultAlgDistPolicy(object):
 class DivideDistPolicy(DefaultAlgDistPolicy):
     def get_dist_info(self, model_index, explorer_set=None):
         if model_index > -1:
-            self.default_policy.update(
-                {"explorer_id": model_index % self.actor_num})
+            self.default_policy.update({"explorer_id": model_index % self.actor_num})
         return _clip_explorer_id(self.default_policy, explorer_set)
 
 
@@ -69,8 +69,7 @@ def _fetch_broker_info(ctr_relation_buf: defaultdict):
     ctr_list = list()
     default_policy = {"broker_id": -1, "explorer_id": -1}
     for _broker, _explorer in ctr_relation_buf.items():
-        default_policy.update(
-            {"broker_id": _broker, "explorer_id": list(_explorer)})
+        default_policy.update({"broker_id": _broker, "explorer_id": list(_explorer)})
         ctr_list.append(default_policy.copy())
 
     return ctr_list
@@ -99,8 +98,7 @@ class FIFODistPolicy(DefaultAlgDistPolicy):
 
                 ctr_relation_buf[_info[0]].update((_info[1],))
             except IndexError:
-                logging.ERROR(
-                    "without data in FIFODistPolicy.deque, used last!")
+                logging.ERROR("without data in FIFODistPolicy.deque, used last!")
 
         return _clip_explorer_id(_fetch_broker_info(ctr_relation_buf), explorer_set)
 
