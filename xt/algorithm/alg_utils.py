@@ -18,8 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """Build general utils for algorithm."""
-
-from collections import defaultdict, deque
+from collections import defaultdict
+from collections import deque
 
 from absl import logging
 
