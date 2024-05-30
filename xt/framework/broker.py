@@ -70,7 +70,8 @@ class Controller(object):
         self._data_store = dict()
 
         self._main_task = list()
-        self.metric = TimerRecorder("Controller", maxlen=50, fields=("send", "recv"))
+        self.metric = TimerRecorder(
+            "Controller", maxlen=50, fields=("send", "recv"))
         self.stats = BrokerStats()
 
         if DebugConf.trace:
@@ -172,9 +173,11 @@ class Controller(object):
 
                 if broker_id == -1:
                     for broker_item, node_info in zip(self.send_broker, self.node_config_list):
-                        broker_item.send(recv_data['ctr_info'], recv_data['data'])
+                        broker_item.send(
+                            recv_data['ctr_info'], recv_data['data'])
                 else:
-                    self.send_broker[broker_id].send(recv_data['ctr_info'], recv_data['data'])
+                    self.send_broker[broker_id].send(
+                        recv_data['ctr_info'], recv_data['data'])
                 self.metric.append(send=time.time() - _t1)
                 debug_within_interval(**kwargs)
 
@@ -250,7 +253,8 @@ class Controller(object):
         if not self._main_task:
             logging.fatal("Without learning process ready!")
 
-        train_thread = [threading.Thread(target=task.main_loop) for task in self.tasks]
+        train_thread = [threading.Thread(
+            target=task.main_loop) for task in self.tasks]
         for task in train_thread:
             task.start()
             self.stats.add_relation_task(task)
@@ -307,7 +311,8 @@ class Broker(object):
 
     def start_data_transfer(self):
         """Start transfer data and other thread."""
-        data_transfer_thread = threading.Thread(target=self.recv_controller_task)
+        data_transfer_thread = threading.Thread(
+            target=self.recv_controller_task)
         data_transfer_thread.start()
 
         data_transfer_thread = threading.Thread(target=self.recv_explorer)
@@ -345,7 +350,8 @@ class Broker(object):
             # recv, data will deserialize with pyarrow default
             # recv_data = self.recv_controller_q.recv()
             ctr_info, data = self.recv_controller_q.recv_bytes()
-            recv_data = {'ctr_info': deserialize(ctr_info), 'data': deserialize(data)}
+            recv_data = {'ctr_info': deserialize(
+                ctr_info), 'data': deserialize(data)}
 
             cmd = get_msg_info(recv_data, "cmd")
             if cmd in ["close"]:
@@ -376,7 +382,8 @@ class Broker(object):
                                                                   path=plasma_path)
 
                 config_set.update({"share_path": self._buf.get_path()})
-                logging.debug("create evaluator with config:{}".format(config_set))
+                logging.debug(
+                    "create evaluator with config:{}".format(config_set))
 
                 self.create_evaluator(config_set)
                 # self._buf.plus_one_live()
@@ -443,7 +450,8 @@ class Broker(object):
         while True:
             if use_single_stub:
                 ctr_info, data = single_stub.recv_bytes(block=True)
-                self._handle_data(ctr_info, data, single_stub, self.send_controller_q)
+                self._handle_data(ctr_info, data, single_stub,
+                                  self.send_controller_q)
                 yield recv_id, ctr_info
             else:
                 # polling with whole learner with no wait.
@@ -456,7 +464,8 @@ class Broker(object):
                         time.sleep(0.002)
                         continue
 
-                    self._handle_data(ctr_info, data, recv_q, self.send_controller_q)
+                    self._handle_data(ctr_info, data, recv_q,
+                                      self.send_controller_q)
                     yield recv_id, ctr_info
 
     def recv_explorer(self):
@@ -520,7 +529,8 @@ class Broker(object):
 
         speedup = config_info.get("speedup", False)
         start_core = config_info.get("start_core", 1)
-        eval_num = config_info.get("benchmark", {}).get("eval", {}).get("evaluator_num", 1)
+        eval_num = config_info.get("benchmark", {}).get(
+            "eval", {}).get("evaluator_num", 1)
         env_num = config_info.get("env_num")
 
         core_set = env_num + start_core
