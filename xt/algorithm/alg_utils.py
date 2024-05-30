@@ -27,8 +27,8 @@ from absl import logging
 def _clip_explorer_id(raw_dist_info, clip_set):
     """
 
-    :param raw_dist_info: 
-    :param clip_set: 
+    :param raw_dist_info:
+    :param clip_set:
 
     """
     if not clip_set:
@@ -61,7 +61,7 @@ class DefaultAlgDistPolicy(object):
     def get_dist_info(self, model_index, explorer_set=None):
         """
 
-        :param model_index: 
+        :param model_index:
         :param explorer_set:  (Default value = None)
 
         """
@@ -70,7 +70,7 @@ class DefaultAlgDistPolicy(object):
     def add_processed_ctr_info(self, ctr_info):
         """
 
-        :param ctr_info: 
+        :param ctr_info:
 
         """
         pass
@@ -81,7 +81,7 @@ class DivideDistPolicy(DefaultAlgDistPolicy):
     def get_dist_info(self, model_index, explorer_set=None):
         """
 
-        :param model_index: 
+        :param model_index:
         :param explorer_set:  (Default value = None)
 
         """
@@ -93,7 +93,7 @@ class DivideDistPolicy(DefaultAlgDistPolicy):
 def _fetch_broker_info(ctr_relation_buf: defaultdict):
     """Fetch broker information.
 
-    :param ctr_relation_buf: defaultdict: 
+    :param ctr_relation_buf: defaultdict:
 
     """
     ctr_list = list()
@@ -116,7 +116,7 @@ class FIFODistPolicy(DefaultAlgDistPolicy):
     def add_processed_ctr_info(self, ctr_info):
         """
 
-        :param ctr_info: 
+        :param ctr_info:
 
         """
         self._processed_agent.append(ctr_info)
@@ -124,7 +124,7 @@ class FIFODistPolicy(DefaultAlgDistPolicy):
     def get_dist_info(self, model_index, explorer_set=None):
         """
 
-        :param model_index: 
+        :param model_index:
         :param explorer_set:  (Default value = None)
 
         """
@@ -155,7 +155,7 @@ class EqualDistPolicy(DefaultAlgDistPolicy):
     def add_processed_ctr_info(self, ctr_info):
         """
 
-        :param ctr_info: 
+        :param ctr_info:
 
         """
         self._processed_agent[ctr_info] += 1
@@ -163,7 +163,7 @@ class EqualDistPolicy(DefaultAlgDistPolicy):
     def get_dist_info(self, model_index, explorer_set=None):
         """
 
-        :param model_index: 
+        :param model_index:
         :param explorer_set:  (Default value = None)
 
         """

@@ -199,7 +199,7 @@ class Controller(object):
     def add_task(self, learner_obj):
         """Add learner task into Broker.
 
-        :param learner_obj: 
+        :param learner_obj:
 
         """
         self._main_task.append(learner_obj)
@@ -247,7 +247,7 @@ class Controller(object):
     def send_alloc_msg(self, actor_status):
         """
 
-        :param actor_status: 
+        :param actor_status:
 
         """
         alloc_cmd = {
@@ -259,7 +259,7 @@ class Controller(object):
     def close(self, close_cmd):
         """
 
-        :param close_cmd: 
+        :param close_cmd:
 
         """
         for broker_item in self.send_broker:
@@ -277,7 +277,7 @@ class Controller(object):
 
     def tasks_loop(self):
         """Create the tasks_loop after ready the messy setup works.
-        
+
         The foreground task of Controller.
         :return:
 
@@ -352,7 +352,7 @@ class Broker(object):
     def _setup_share_qs_firstly(self, config_info):
         """Setup only once time.
 
-        :param config_info: 
+        :param config_info:
 
         """
         if self.recv_explorer_q_ready:
@@ -467,10 +467,10 @@ class Broker(object):
     def _handle_data(ctr_info, data, explorer_stub, broker_stub):
         """
 
-        :param ctr_info: 
-        :param data: 
-        :param explorer_stub: 
-        :param broker_stub: 
+        :param ctr_info:
+        :param data:
+        :param explorer_stub:
+        :param broker_stub:
 
         """
         object_id = ctr_info["object_id"]
@@ -481,7 +481,7 @@ class Broker(object):
     def _step_explorer_msg(self, use_single_stub):
         """Yield local msg received.
 
-        :param use_single_stub: 
+        :param use_single_stub:
 
         """
 
@@ -533,7 +533,7 @@ class Broker(object):
     def create_explorer(self, config_info):
         """Create explorer.
 
-        :param config_info: 
+        :param config_info:
 
         """
         env_para = config_info.get("env_para")
@@ -566,7 +566,7 @@ class Broker(object):
     def create_evaluator(self, config_info):
         """Create evaluator.
 
-        :param config_info: 
+        :param config_info:
 
         """
         test_id = config_info.get("test_id")
@@ -601,7 +601,7 @@ class Broker(object):
     def alloc(self, actor_status):
         """Monitor system and adjust resource.
 
-        :param actor_status: 
+        :param actor_status:
 
         """
         p_id = [_p.pid for _, _p in self.explore_process.items()]
@@ -625,7 +625,7 @@ class Broker(object):
     def close(self, close_cmd):
         """Close broker.
 
-        :param close_cmd: 
+        :param close_cmd:
 
         """
         for _, send_q in self.send_explorer_q.items():
@@ -651,7 +651,7 @@ class Broker(object):
 def stats_id(ctr_info):
     """Assemble the id for record stats information.
 
-    :param ctr_info: 
+    :param ctr_info:
 
     """
     return "B{}E{}{}".format(
