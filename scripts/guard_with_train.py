@@ -40,7 +40,26 @@ def write_conf_file(config_folder, config):
 
 
 def check_sys_argv(argv):
-    """Fetch ci parameters."""
+    """    Fetch ci parameters.
+
+    This function fetches the CI parameters from the given configuration
+    file and returns the necessary values.
+
+    Args:
+        argv (list): A list of command line arguments.
+
+    Returns:
+        tuple: A tuple containing the following values: - node_array (list or None): A
+            list of node configurations if the task is 'train', otherwise None. -
+            end_tag (str): The end flag value from the configuration. - ci_task
+            (str): The type of CI task. - save_steps (int): The interval for saving
+            steps. - config_dir (str): The configuration directory path. -
+            single_flag (str or None): The single case flag if provided, otherwise
+            None.
+
+    Raises:
+        SystemExit: If the length of argv is not 2.
+    """
     if len(argv) != 2:
         print("input argv err")
         exit(1)
