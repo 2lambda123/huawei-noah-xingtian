@@ -29,7 +29,23 @@ class Config(dict):
     """
 
     def __init__(self, *args, **kwargs):
-        """Init config class with multiple config files or dictionary."""
+        """        Initialize the Config class with multiple config files or a dictionary.
+
+        This method initializes the Config class with multiple configuration
+        files or a dictionary. It iterates through the given arguments and loads
+        the configuration data into the Config object.
+
+        Args:
+            *args: Variable length argument list. It can be a list of file paths or
+                dictionaries containing configuration data.
+            **kwargs: Arbitrary keyword arguments. These are used to provide additional
+                configuration data.
+
+
+        Raises:
+            Exception: If the config file must be in YAML or Python format.
+            TypeError: If the arguments are not of type dict or str.
+        """
         super(Config, self).__init__()
         for arg in args:
             if isinstance(arg, str):
