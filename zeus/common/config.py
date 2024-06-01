@@ -35,7 +35,7 @@ class Config(dict):
             if isinstance(arg, str):
                 if arg.endswith('.yaml') or arg.endswith('.yml'):
                     with open(arg) as f:
-                        raw_dict = yaml.load(f, Loader=yaml.FullLoader)
+                        raw_dict = yaml.load(f, Loader=yaml.SafeLoader)
                         _dict2config(self, raw_dict)
                 elif arg.endswith('.py'):
                     module_name = osp.basename(arg)[:-3]

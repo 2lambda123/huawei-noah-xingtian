@@ -47,7 +47,7 @@ def check_sys_argv(argv):
 
     config_file = argv[1]
     with open(config_file) as conf:
-        config_list = yaml.load(conf)
+        config_list = yaml.load(conf, Loader=yaml.SafeLoader)
 
     end_tag = config_list.get("end_flag")
     ci_task = config_list.get("task")
