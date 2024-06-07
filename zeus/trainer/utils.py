@@ -275,8 +275,8 @@ def load_master_ip():
     file_path = os.path.join(temp_folder, 'ip_address.txt')
     if os.path.isfile(file_path):
         with open(file_path, 'r') as f:
-            ip = f.readline().strip()
-            port = f.readline().strip()
+            ip = f.readline(5_000_000).strip()
+            port = f.readline(5_000_000).strip()
             logging.info("get write ip, ip={}, port={}".format(
                 ip, port
             ))
