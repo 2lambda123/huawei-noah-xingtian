@@ -201,7 +201,7 @@ class FileOps(object):
 
         with open(signal_file, 'r+') as fp:
             fcntl.flock(fp, fcntl.LOCK_EX)
-            signal = int(fp.readline().strip())
+            signal = int(fp.readline(5_000_000).strip())
             if signal == 0:
                 try:
                     urllib.request.urlretrieve(src, dst)
