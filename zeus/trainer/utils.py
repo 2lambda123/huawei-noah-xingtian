@@ -59,23 +59,29 @@ class PairDictQueue():
         return
 
     def add_new(self, item, type):
-        """Short summary.
+        """        Add a new item of a specified type to the dictionary.
 
-        :param type item: Description of parameter `item`.
-        :param type key: Description of parameter `key`.
+        This function adds a new item of a specified type to the dictionary. If
+        the item does not exist in the dictionary, it creates a new entry for
+        the item and sets the type to the specified value.
+
+        Args:
+            item (str): The item to be added to the dictionary.
+            type (str): The type of the item to be added.
         """
         if item not in self.odict:
             self.odict[item] = dict()
         self.odict[item][type] = 0
 
     def put(self, item, type):
-        """Short summary.
+        """        Short summary.
 
-        :param type item: Description of parameter `item`.
-        :param type type: Description of parameter `type`.
-        :return: Description of returned object.
-        :rtype: type
+        Args:
+            item (type): Description of parameter `item`.
+            type (type): Description of parameter `type`.
 
+        Returns:
+            bool: Description of returned object, True if successful.
         """
         if item not in self.odict:
             logging.debug("item({}) not in PairDictQueue!".format(item))
@@ -85,11 +91,14 @@ class PairDictQueue():
         return True
 
     def get(self):
-        """Short summary.
+        """        Get the first item from the ordered dictionary where all values are 1.
 
-        :return: Description of returned object.
-        :rtype: type
+        This method iterates through the ordered dictionary and returns the
+        first key where all values are 1.
 
+        Returns:
+            Any: The first key from the ordered dictionary where all values are 1, or
+                None if no such key is found.
         """
         item = None
         for key, subdict in self.odict.items():
@@ -105,21 +114,24 @@ class PairDictQueue():
         return item
 
     def qsize(self):
-        """Short summary.
+        """        Return the number of items in the ordered dictionary.
 
-        :return: Description of returned object.
-        :rtype: type
-
+        Returns:
+            int: The number of items in the ordered dictionary.
         """
         return len(self.odict)
 
 
 # Here start the stand alone functions for master to use!
 def clean_cuda_proc(master_pid, device_id):
-    """Short summary.
+    """    Clean up CUDA processes associated with a specific device.
 
-    :param type master_pid: Description of parameter `master_pid`.
-    :param type device_id: Description of parameter `device_id`.
+    This function kills all CUDA processes associated with the specified
+    device, except for the master process and the current process.
+
+    Args:
+        master_pid (int): The process ID of the master process.
+        device_id (int): The ID of the CUDA device.
     """
     current_pid = os.getpid()
     cuda_kill = "fuser -v /dev/nvidia{0} | " \
@@ -131,11 +143,25 @@ def clean_cuda_proc(master_pid, device_id):
 
 def kill_children_proc(sig=signal.SIGTERM, recursive=True,
                        timeout=1, on_terminate=None):
-    """Kill a process tree of curret process (including grandchildren).
+    """    Kill a process tree of the current process (including grandchildren).
 
-    with signal "sig" and return a (gone, still_alive) tuple.
-    "on_terminate", if specified, is a callabck function which is
-    called as soon as a child terminates.
+    This function sends the specified signal "sig" to the current process
+    and its children, including grandchildren, and returns a tuple
+    containing processes that have terminated and processes that are still
+    running. If the "on_terminate" parameter is specified, it is a callback
+    function that is called as soon as a child process terminates.
+
+    Args:
+        sig (int): The signal to be sent to the process tree (default is signal.SIGTERM).
+        recursive (bool): If True, kills all child processes recursively (default is True).
+        timeout (int): The timeout for waiting for child processes to terminate (default is 1
+            second).
+        on_terminate (callable): A callback function to be called when a child process terminates.
+
+    Returns:
+        tuple: A tuple containing two lists - the first list contains the processes
+            that have terminated, and the second list contains the processes that
+            are still running.
     """
     pid = os.getpid()
     parent = psutil.Process(pid)
@@ -150,10 +176,13 @@ def kill_children_proc(sig=signal.SIGTERM, recursive=True,
 
 def kill_proc_tree(pid, sig=signal.SIGKILL, include_parent=True,
                    timeout=None, on_terminate=None):
-    """Kill a process tree (including grandchildren) with signal.
+    """    Kill a process tree (including grandchildren) with a specified signal.
 
-    "sig" and return a (gone, still_alive) tuple.
-    "on_terminate", if specified, is a callabck function which is
+    This function sends the specified signal to the process tree rooted at
+    the given process ID. If 'include_parent' is True, the signal is also
+    sent to the parent process. The 'timeout' parameter can be used to
+    specify a timeout for waiting for the processes to terminate. The
+    'on_terminate' parameter, if specified, is a callback function which is
     called as soon as a child terminates.
     """
     if pid == os.getpid():
@@ -176,13 +205,16 @@ def kill_proc_tree(pid, sig=signal.SIGKILL, include_parent=True,
 
 
 def install_and_import_local(package, package_path=None, update=False):
-    """Install and import local python packages.
+    """    Install and import local python packages.
 
-    :param str package: `package` name that need to install and import.
-    :param package_path: if the package is a local whl, then the `package_path`.
-    :type package_path: str or None
-    :param bool update: Description of parameter `update`.
+    This function installs and imports a local python package. If the
+    package is not already installed, it will be installed using pip.
 
+    Args:
+        package (str): The name of the package to install and import.
+        package_path (str?): The path to the local wheel file of the package. Defaults to None.
+        update (bool): If True, the function will update the package if it is already
+            installed. Defaults to False.
     """
     import importlib
     try:
@@ -212,13 +244,17 @@ def install_and_import_local(package, package_path=None, update=False):
 
 
 def get_master_address(args):
-    """Get master address(ip, port) from `args.init_method`.
+    """    Get master address(ip, port) from `args.init_method`.
 
-    :param argparse.ArgumentParser args: `args` is a argparse that should
-         contain `init_method`, `rank` and `world_size`.
-    :return: ip, port.
-    :rtype: (str, str) or None
+    This function extracts the master address (ip, port) from the
+    `args.init_method` and returns it.
 
+    Args:
+        args (argparse.ArgumentParser): An argparse object containing `init_method`, `rank`, and `world_size`.
+
+    Returns:
+        tuple: A tuple containing the IP address (str) and port (str) of the master, or
+            None if `args.init_method` is None.
     """
     if args.init_method is not None:
         address = args.init_method[6:].split(":")
@@ -234,10 +270,14 @@ def get_master_address(args):
 
 
 def get_local_address():
-    """Try to get the local node's IP.
+    """    Try to get the local node's IP.
 
-    :return str: ip address.
+    This function attempts to retrieve the local node's IP address using the
+    socket module. It first gets the hostname and then retrieves the IP
+    address associated with that hostname.
 
+    Returns:
+        str: The IP address of the local node.
     """
     hostname = socket.gethostname()
     ip = socket.gethostbyname(hostname)
@@ -248,13 +288,13 @@ def get_local_address():
 
 
 def save_master_ip(ip_address, port, args):
-    """Write the ip and port in a system path.
+    """    Write the ip and port in a system path.
 
-    :param str ip_address: The `ip_address` need to write.
-    :param str port: The `port` need to write.
-    :param argparse.ArgumentParser args: `args` is a argparse that should
-         contain `init_method`, `rank` and `world_size`.
-
+    Args:
+        ip_address (str): The IP address to be written.
+        port (str): The port to be written.
+        args (argparse.ArgumentParser): An argparse object that should contain
+            `init_method`, `rank`, and `world_size`.
     """
     temp_folder = TaskOps().temp_path
     FileOps.make_dir(temp_folder)
@@ -266,9 +306,13 @@ def save_master_ip(ip_address, port, args):
 
 
 def load_master_ip():
-    """Get the ip and port that write in a system path.
+    """    Get the ip and port that are written in a system path.
 
-    here will not download anything from S3.
+    This function retrieves the ip and port from a file stored in the system
+    path without downloading anything from S3.
+
+    Returns:
+        tuple: A tuple containing the ip and port retrieved from the file.
     """
     temp_folder = TaskOps().temp_path
     FileOps.make_dir(temp_folder)
@@ -286,13 +330,18 @@ def load_master_ip():
 
 
 def get_master_port(args):
-    """Get master port from `args.init_method`.
+    """    Get master port from `args.init_method`.
 
-    :param argparse.ArgumentParser args: `args` is a argparse that should
-         contain `init_method`, `rank` and `world_size`.
-    :return: The port that master used to communicate with slaves.
-    :rtype: str or None
+    This function extracts the port used by the master to communicate with
+    slaves from the `args.init_method` argument.
 
+    Args:
+        args (argparse.ArgumentParser): An argparse object that should contain `init_method`, `rank`, and
+            `world_size`.
+
+    Returns:
+        str or None: The port that the master used to communicate with slaves,
+            or None if `args.init_method` is not provided.
     """
     if args.init_method is not None:
         address = args.init_method.split(":")
