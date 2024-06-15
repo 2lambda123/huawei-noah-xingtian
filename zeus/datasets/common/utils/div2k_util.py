@@ -10,11 +10,11 @@
 
 """This script contains some common function to process the DIV2K dataset."""
 import os
-import pickle
 import cv2
 # import lmdb
 import numpy as np
 import glob
+import fickling
 
 IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG',
                   '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
@@ -85,7 +85,7 @@ def read_img_pkl(path):
     :rtype: tuple
     """
     with open(path, "rb") as file:
-        return pickle.load(file)
+        return fickling.load(file)
 
 
 def read_img_img(path):

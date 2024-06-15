@@ -13,6 +13,7 @@ import os
 import pickle
 import logging
 import shutil
+import fickling
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ class FileOps(object):
         if not os.path.isfile(filename):
             return None
         with open(filename, "rb") as f:
-            return pickle.load(f)
+            return fickling.load(f)
 
     @classmethod
     def copy_folder(cls, src, dst):

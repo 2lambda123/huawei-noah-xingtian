@@ -28,6 +28,7 @@ from zeus.report.share_memory import ShareMemory, LocalShareMemory, ShareMemoryC
 from .nsga_iii import SortAndSelectPopulation
 from .record import ReportRecord
 from zeus.common.utils import singleton
+import fickling
 
 
 class ReportServer(object):
@@ -145,7 +146,7 @@ class ReportServer(object):
         _file = os.path.join(step_path, ".reports")
         if os.path.exists(_file):
             with open(_file, "rb") as f:
-                data = pickle.load(f)
+                data = fickling.load(f)
             cls._hist_records = data[0]
             cls.__instances__ = data[1]
 

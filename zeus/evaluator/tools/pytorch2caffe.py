@@ -13,8 +13,8 @@ import sys
 import torch
 from torch.autograd import Variable
 import logging
-import pickle
 import os
+import fickling
 
 sys.path.append('../../third_party/PytorchToCaffe-master/')
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     shape_file = sys.argv[2]
     save_dir = os.path.dirname(model_file)
     with open(model_file, "rb") as f:
-        model = pickle.load(f)
+        model = fickling.load(f)
     with open(shape_file, "rb") as f:
-        input_shape = pickle.load(f)
+        input_shape = fickling.load(f)
     pytorch2caffe(model, input_shape, save_dir)

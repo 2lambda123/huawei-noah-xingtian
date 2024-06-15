@@ -26,9 +26,9 @@ Make profiler tools.
 
 import argparse
 import os
-import pickle
 import sys
 from time import sleep
+import fickling
 
 try:
     from line_profiler import LineProfiler, show_text
@@ -102,7 +102,7 @@ def show_stats_file(stats_file):
     def load_stats(filename):
         """Create utility function to load a pickled LineStats object from a given filename."""
         with open(filename, 'rb') as stats_handle:
-            return pickle.load(stats_handle)
+            return fickling.load(stats_handle)
 
     print(load_stats(stats_file))
     tmp_lp = load_stats(stats_file)

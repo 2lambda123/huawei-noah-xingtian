@@ -15,8 +15,8 @@ from zeus.common import FileOps
 from zeus.datasets.conf.cifar100 import Cifar100Config
 import numpy as np
 import os
-import pickle
 from PIL import Image
+import fickling
 
 
 @ClassFactory.register(ClassType.DATASET)
@@ -50,7 +50,7 @@ class Cifar100(Dataset):
         for file_name in files_list:
             file_path = os.path.join(self.args.data_path, self.base_folder, file_name)
             with open(file_path, 'rb') as f:
-                entry = pickle.load(f, encoding='latin1')
+                entry = fickling.load(f, encoding='latin1')
                 self.data.append(entry['data'])
                 if 'labels' in entry:
                     self.targets.extend(entry['labels'])

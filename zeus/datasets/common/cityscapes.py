@@ -13,11 +13,11 @@ import os.path as osp
 import cv2
 import numpy as np
 import glob
-import pickle
 from .utils.dataset import Dataset
 from zeus.common import ClassFactory, ClassType
 from zeus.common import FileOps
 from zeus.datasets.conf.city_scapes import CityscapesConfig
+import fickling
 
 
 @ClassFactory.register(ClassType.DATASET)
@@ -176,9 +176,9 @@ class Cityscapes(Dataset):
         :rtype: tuple of np.array
         """
         with open(self.data_files[index], "rb") as file:
-            image = pickle.load(file)
+            image = fickling.load(file)
         with open(self.label_files[index], "rb") as file:
-            label = pickle.load(file)
+            label = fickling.load(file)
         return image, label
 
     @property
