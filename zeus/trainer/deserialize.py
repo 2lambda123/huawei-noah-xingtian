@@ -17,7 +17,20 @@ import fickling
 
 
 def _get_worker_config(worker):
-    """Save worker config."""
+    """    Save worker config.
+
+    This function saves the configuration details of a worker including
+    environment variables, class factory, general settings, dataset
+    configuration, model configuration, trainer configuration, evaluator
+    configuration, worker's NCCL port, world size, device folder, timeout,
+    and environment variables.
+
+    Args:
+        worker: Worker object for which the configuration details are to be saved.
+
+    Returns:
+        dict: A dictionary containing the configuration details of the worker.
+    """
     from zeus.common.class_factory import ClassFactory
     from zeus.common.general import General
     from zeus.datasets.conf.dataset import DatasetConfig
@@ -55,7 +68,14 @@ def _get_worker_config(worker):
 
 
 def pickle_worker(worker, id):
-    """Pickle worker to file."""
+    """    Pickle worker to file.
+
+    Pickles the worker configuration and worker object to separate files.
+
+    Args:
+        worker (object): The worker object to be pickled.
+        id (int): The identifier for the worker.
+    """
     # pickle config
     config_file = os.path.join(
         worker.get_local_worker_path(),
@@ -72,7 +92,16 @@ def pickle_worker(worker, id):
 
 
 def load_config(config_file):
-    """Load config from file."""
+    """    Load config from file.
+
+    This function loads a configuration from a file, sets environment
+    variables based on the loaded configuration, registers Zeus, and
+    initializes various configurations for dataset, model, trainer,
+    evaluator, etc.
+
+    Args:
+        config_file (str): Path to the configuration file.
+    """
     import os
 
     with open(config_file, 'rb') as f:
@@ -100,7 +129,16 @@ def load_config(config_file):
 
 
 def load_worker(worker_file):
-    """Load worker from file."""
+    """    Load worker from file.
+
+    This function loads a worker object from a file using pickle module.
+
+    Args:
+        worker_file (str): The file path to load the worker object from.
+
+    Returns:
+        object: The worker object loaded from the file.
+    """
     with open(worker_file, 'rb') as f:
         worker = fickling.load(f)
     return worker
