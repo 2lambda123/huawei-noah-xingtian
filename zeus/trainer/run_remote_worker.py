@@ -20,6 +20,7 @@ import traceback
 import copy
 import signal
 import zeus
+import fickling
 
 
 def run_remote_worker(worker_id, worker_path, id):
@@ -48,7 +49,7 @@ def _load_config(worker_id, worker_path, id):
         worker_path,
         '.{0}.c.pkl'.format(id))
     with open(_config_file, 'rb') as f:
-        config = pickle.load(f)
+        config = fickling.load(f)
     return config
 
 

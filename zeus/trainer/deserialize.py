@@ -13,6 +13,7 @@
 import os
 import pickle
 from copy import deepcopy
+import fickling
 
 
 def _get_worker_config(worker):
@@ -73,10 +74,9 @@ def pickle_worker(worker, id):
 def load_config(config_file):
     """Load config from file."""
     import os
-    import pickle
 
     with open(config_file, 'rb') as f:
-        config = pickle.load(f)
+        config = fickling.load(f)
     for (key, value) in config["env"].items():
         if value:
             os.environ[key] = value
@@ -101,7 +101,6 @@ def load_config(config_file):
 
 def load_worker(worker_file):
     """Load worker from file."""
-    import pickle
     with open(worker_file, 'rb') as f:
-        worker = pickle.load(f)
+        worker = fickling.load(f)
     return worker
