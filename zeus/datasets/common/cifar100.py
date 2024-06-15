@@ -61,12 +61,16 @@ class Cifar100(Dataset):
         self.data = self.data.transpose((0, 2, 3, 1))  # convert to HWC
 
     def __getitem__(self, index):
-        """Get an item of the dataset according to the index.
+        """        Get an item of the dataset according to the index.
 
-        :param index: index
-        :type index: int
-        :return: an item of the dataset according to the index
-        :rtype: tuple
+        This method retrieves an item from the dataset based on the provided
+        index.
+
+        Args:
+            index (int): The index of the item to retrieve.
+
+        Returns:
+            tuple: A tuple containing the image and target corresponding to the index.
         """
         img, target = self.data[index], self.targets[index]
 
@@ -80,19 +84,26 @@ class Cifar100(Dataset):
         return img, target
 
     def __len__(self):
-        """Get the length of the dataset.
+        """        Get the length of the dataset.
 
-        :return: the length of the dataset
-        :rtype: int
+        This function returns the length of the dataset by returning the length
+        of the data attribute.
+
+        Returns:
+            int: The length of the dataset.
         """
         return len(self.data)
 
     @property
     def input_channels(self):
-        """Input channels of the cifar100 image.
+        """        Return the number of input channels of the CIFAR-100 image.
 
-        :return: the input channels
-        :rtype: int
+        This function determines the number of input channels based on the shape
+        of the CIFAR-100 image data.
+
+        Returns:
+            int: The number of input channels, which is 3 if the shape of the data is
+                4-dimensional, otherwise 1.
         """
         _shape = self.data.shape
         _input_channels = 3 if len(_shape) == 4 else 1
@@ -100,10 +111,13 @@ class Cifar100(Dataset):
 
     @property
     def input_size(self):
-        """Input size of cifar100 image.
+        """        Return the input size of a CIFAR-100 image.
 
-        :return: the input size
-        :rtype: int
+        This function calculates and returns the input size of a CIFAR-100 image
+        based on the shape of the data.
+
+        Returns:
+            int: The input size of the CIFAR-100 image.
         """
         _shape = self.data.shape
         return _shape[1]
