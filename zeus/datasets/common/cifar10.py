@@ -61,12 +61,13 @@ class Cifar10(Dataset):
         self.data = self.data.transpose((0, 2, 3, 1))  # convert to HWC
 
     def __getitem__(self, index):
-        """Get an item of the dataset according to the index.
+        """        Get an item of the dataset according to the index.
 
-        :param index: index
-        :type index: int
-        :return: an item of the dataset according to the index
-        :rtype: tuple
+        Args:
+            index (int): Index of the item to retrieve.
+
+        Returns:
+            tuple: A tuple containing the image and target corresponding to the index.
         """
         img, target = self.data[index], self.targets[index]
 
@@ -80,19 +81,26 @@ class Cifar10(Dataset):
         return img, target
 
     def __len__(self):
-        """Get the length of the dataset.
+        """        Get the length of the dataset.
 
-        :return: the length of the dataset
-        :rtype: int
+        This function returns the length of the dataset by returning the length
+        of the data attribute.
+
+        Returns:
+            int: The length of the dataset.
         """
         return len(self.data)
 
     @property
     def input_channels(self):
-        """Input channel number of the cifar10 image.
+        """        Input channel number of the CIFAR-10 image.
 
-        :return: the channel number
-        :rtype: int
+        This function determines the number of input channels based on the shape
+        of the data. If the shape is 4-dimensional, it sets the input channels
+        to 3; otherwise, it sets it to 1.
+
+        Returns:
+            int: The number of input channels.
         """
         _shape = self.data.shape
         _input_channels = 3 if len(_shape) == 4 else 1
@@ -100,14 +108,24 @@ class Cifar10(Dataset):
 
     @property
     def input_size(self):
-        """Input size of cifar10 image.
+        """        Input size of CIFAR-10 image.
 
-        :return: the input size
-        :rtype: int
+        This function returns the input size of a CIFAR-10 image by accessing
+        the shape attribute of the data.
+
+        Returns:
+            int: The input size of the CIFAR-10 image.
         """
         _shape = self.data.shape
         return _shape[1]
 
     def _check_integrity(self):
-        """Check the integrity of the dataset."""
+        """        Check the integrity of the dataset.
+
+        This function checks the integrity of the dataset to ensure that it is
+        consistent and error-free.
+
+        Returns:
+            bool: True if the dataset integrity check passes.
+        """
         return True

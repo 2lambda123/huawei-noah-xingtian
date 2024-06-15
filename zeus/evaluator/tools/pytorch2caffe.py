@@ -20,14 +20,12 @@ sys.path.append('../../third_party/PytorchToCaffe-master/')
 
 
 def pytorch2caffe(model, input_shape, save_dir):
-    """Convert the pytorch model to onnx model.
+    """    Convert the PyTorch model to Caffe model using pytorch_to_caffe library.
 
-    :param model: pytorch model class
-    :type model: class
-    :param input_shape: the shape of input
-    :type input_shape: list
-    :param onnx_save_path: the path and filename to save the onnx model file
-    :type onnx_save_path: str
+    Args:
+        model (class): PyTorch model class to be converted.
+        input_shape (list): The shape of the input to the model.
+        save_dir (str): The directory path to save the Caffe model files.
     """
     import pytorch_to_caffe  # noqa
     name = 'torch2caffe'

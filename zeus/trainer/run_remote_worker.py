@@ -24,7 +24,19 @@ import fickling
 
 
 def run_remote_worker(worker_id, worker_path, id):
-    """Run worker on remote mochine."""
+    """    Run worker on a remote machine.
+
+    This function initializes logging, loads configuration, registers Zeus,
+    and runs the worker on a remote machine.
+
+    Args:
+        worker_id (int): The ID of the worker.
+        worker_path (str): The path to the worker.
+        id (int): The ID.
+
+    Returns:
+        int: 0 upon successful completion.
+    """
     from zeus.common.utils import init_log
     init_log(level="info",
              log_file=".temp_{}.log".format(worker_id),
@@ -45,6 +57,20 @@ def run_remote_worker(worker_id, worker_path, id):
 
 
 def _load_config(worker_id, worker_path, id):
+    """Load configuration data for a specific worker.
+
+    This function loads the configuration data for a specific worker based
+    on the worker ID and path.
+
+    Args:
+        worker_id (int): The ID of the worker.
+        worker_path (str): The path where the worker configuration file is located.
+        id (int): The specific ID used to identify the configuration file.
+
+    Returns:
+        dict: A dictionary containing the configuration data for the worker.
+    """
+
     _config_file = os.path.join(
         worker_path,
         '.{0}.c.pkl'.format(id))
@@ -55,11 +81,11 @@ def _load_config(worker_id, worker_path, id):
 
 def kill_proc_tree(pid, sig=signal.SIGKILL, include_parent=True,
                    timeout=None, on_terminate=None):
-    """Kill a process tree (including grandchildren) with signal.
+    """    Kill a process tree (including grandchildren) with a specified signal.
 
-    "sig" and return a (gone, still_alive) tuple.
-    "on_terminate", if specified, is a callabck function which is
-    called as soon as a child terminates.
+    This function sends a specified signal to the process tree rooted at the
+    given PID. It includes the parent process if specified and provides
+    options for timeout and callback upon termination.
     """
     if pid == os.getpid():
         raise RuntimeError("I refuse to kill myself")
@@ -80,7 +106,21 @@ def kill_proc_tree(pid, sig=signal.SIGKILL, include_parent=True,
 
 
 def call_in_gpu(config, id, worker_id, worker_path):
-    """Call function based on GPU devices."""
+    """    Call function based on GPU devices.
+
+    This function sets up the environment variables for GPU processing based
+    on the provided configuration. It assigns the worker's NCCL port and
+    updates the PYTHONPATH accordingly.
+
+    Args:
+        config (dict): A dictionary containing configuration parameters.
+        id (int): An identifier for the function call.
+        worker_id (int): An identifier for the worker.
+        worker_path (str): The path to the worker.
+
+    Returns:
+        list: A list containing the subprocess PID.
+    """
     env = os.environ.copy()
     sub_pid_list = []
     worker_nccl_port = config["worker_nccl_port"]
@@ -104,7 +144,21 @@ def call_in_gpu(config, id, worker_id, worker_path):
 
 
 def call_in_npu(config, id, worker_id, worker_path):
-    """Call function based on NPU devices."""
+    """    Call function based on NPU devices.
+
+    This function is responsible for calling a function based on NPU
+    devices. It sets up the environment, reads the rank table file, and
+    handles the configuration based on the 'dft' flag in the config.
+
+    Args:
+        config (dict): Configuration settings.
+        id (int): Identifier.
+        worker_id (int): Worker identifier.
+        worker_path (str): Path to the worker.
+
+    Returns:
+        list: List containing the subprocess PID.
+    """
     env = os.environ.copy()
     sub_pid_list = []
     npu_call_path = os.path.join(config["device_folder"], 'npu')
@@ -135,19 +189,23 @@ def call_in_npu(config, id, worker_id, worker_path):
 
 
 def _subprocess(config, id, worker_id, worker_path, rank, world_size, env, is_backend=False):
-    """Subprocess on each rank.
+    """    Subprocess on each rank.
 
     Load pickle file into worker class, and use subprocess to run the
     train_process function.
 
-    :param rank: node rank
-    :type rank: int
-    :param world_size: number of total nodes
-    :type world_size: int
-    :param env: environ
-    :type env: dict
-    :param is_backend: backend or not
-    :type is_backend: bool
+    Args:
+        config (dict): Configuration settings.
+        id (str): Identifier for the subprocess.
+        worker_id (str): Identifier for the worker.
+        worker_path (str): Path to the worker.
+        rank (int): Node rank.
+        world_size (int): Number of total nodes.
+        env (dict): Environment variables.
+        is_backend (bool?): Flag indicating if it's a backend process.
+
+    Returns:
+        int: Process ID of the subprocess.
     """
     env['RANK'] = "{}".format(rank)
     env['WORLD_SIZE'] = "{}".format(world_size)
@@ -186,6 +244,20 @@ def _subprocess(config, id, worker_id, worker_path, rank, world_size, env, is_ba
 
 
 def _refresh_config_file(config, id, worker_id, worker_path, env):
+    """Refresh the configuration file with updated environment variables.
+
+    This function updates the configuration dictionary with the provided
+    environment variables. It then saves the updated configuration to a
+    pickle file in the worker's path.
+
+    Args:
+        config (dict): The configuration dictionary to be updated.
+        id (int): The identifier for the configuration.
+        worker_id (int): The identifier for the worker.
+        worker_path (str): The path to the worker's directory.
+        env (dict): A dictionary containing environment variables.
+    """
+
     config["env"]["RANK"] = env.get("RANK", None)
     config["env"]["WORLD_SIZE"] = env.get("WORLD_SIZE", None)
     config["env"]["PYTHONPATH"] = env.get("PYTHONPATH", None)

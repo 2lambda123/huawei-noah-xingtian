@@ -38,9 +38,52 @@ try:
             follow=[],
             profiler=None,  # pylint: disable=W0102
             stats_file="default_stats.pkl"):
-        """Warp the profile function into decorator."""
+        """        Warp the profile function into decorator.
+
+        This function is a decorator that profiles the execution of the
+        decorated function. It adds the decorated function and any specified
+        sub-functions to the profiler, enables profiling, executes the function,
+        and then saves and dumps the profiling statistics.
+
+        Args:
+            follow (list): A list of functions to be profiled along with the decorated function.
+            profiler: The profiler object used for profiling.
+            stats_file (str): The file path to save the profiling statistics.
+
+        Returns:
+            function: The profiled version of the input function.
+        """
         def inner(func):
+            """Profile the execution of a function and its sub-functions.
+
+            This function takes another function as input, profiles its execution
+            along with any specified sub-functions, and returns the profiled
+            results. It uses a profiler to track the function calls and their
+            execution times.
+
+            Args:
+                func (function): The function to be profiled.
+
+            Returns:
+                function: A profiled version of the input function.
+            """
+
             def profiled_func(*args, **kwargs):
+                """Profile the execution of a function and its sub-functions.
+
+                This function profiles the execution of a given function along with its
+                sub-functions. It adds the function and its sub-functions to the
+                profiler, enables profiling by count, executes the function with the
+                provided arguments, and then saves and dumps the profiling statistics.
+
+                Args:
+                    *args: Positional arguments to be passed to the function.
+                    **kwargs: Keyword arguments to be passed to the function.
+
+                Returns:
+                    The return value of the executed function.
+                """
+
                 try:
                     profiler.add_function(func)
                     for sub_func in follow:
@@ -59,11 +102,45 @@ except ImportError:
     show_text = None
 
     def do_profile(follow=[], profiler=None):  # pylint: disable=W0102
-        """Create dummy for import error."""
+        """  Create a dummy decorator for profiling functions.
+
+  This decorator is used to profile functions using a profiler. It takes
+  optional arguments 'follow' and 'profiler'.
+
+  Args:
+      follow (list): A list of functions to be profiled.
+      profiler (object): An optional profiler object to be used for profiling.
+
+  Returns:
+      function: A decorator function that can be used to profile other functions.
+  """
         def inner(func):
-            """Create dummy function do nothing."""
+            """            Create a decorator that creates a dummy function that does nothing.
+
+            This decorator takes a function as input and returns a new function that
+            does nothing when called.
+
+            Args:
+                func (function): The input function to be wrapped.
+
+            Returns:
+                function: A new function that does nothing when called.
+            """
             def nothing(*args, **kwargs):
-                """Create dummy function do nothing."""
+                """                Create a dummy function that does nothing.
+
+                This function is a dummy function that simply returns the result of
+                calling another function with the provided arguments and keyword
+                arguments.
+
+                Args:
+                    *args: Positional arguments to be passed to the function.
+                    **kwargs: Keyword arguments to be passed to the function.
+
+                Returns:
+                    The result of calling the specified function with the provided arguments
+                        and keyword arguments.
+                """
                 return func(*args, **kwargs)
 
             return nothing
@@ -72,7 +149,20 @@ except ImportError:
 
 
 def save_and_dump_stats(profiler, stats_file="default_stats.pkl"):
-    """Create utils for save stats into file."""
+    """    Create utils for saving stats into a file.
+
+    This function takes a profiler object and a file path to save the
+    profiler stats. It first checks if the profiler object is valid. If the
+    stats file already exists, it removes the file and rewrites it.
+    Otherwise, it writes the stats into the specified file. It then gets the
+    stats information from the profiler, displays the timings, and dumps the
+    stats into the file.
+
+    Args:
+        profiler: Profiler object containing stats information.
+        stats_file (str): Path to the file where stats will be saved. Default is
+            "default_stats.pkl".
+    """
     if not profiler:
         print("invalid profiler handler!")
         return
@@ -94,13 +184,25 @@ def save_and_dump_stats(profiler, stats_file="default_stats.pkl"):
 
 
 def show_stats_file(stats_file):
-    """Create utils for display stats."""
+    """    Create utils for display stats.
+
+    Args:
+        stats_file (str): The path to the stats file.
+    """
     if not show_text:
         print("Please use 'pip install line_profiler`, return with nothing do!")
         return
 
     def load_stats(filename):
-        """Create utility function to load a pickled LineStats object from a given filename."""
+        """        Create a utility function to load a pickled LineStats object from a
+        given filename.
+
+        Args:
+            filename (str): The name of the file containing the pickled LineStats object.
+
+        Returns:
+            LineStats: The LineStats object loaded from the file.
+        """
         with open(filename, 'rb') as stats_handle:
             return fickling.load(stats_handle)
 

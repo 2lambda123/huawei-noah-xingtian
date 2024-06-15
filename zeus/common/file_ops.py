@@ -23,11 +23,14 @@ class FileOps(object):
 
     @classmethod
     def make_dir(cls, *args):
-        """Make new a local directory.
+        """        Make a new local directory.
 
-        :param * args: list of str path to joined as a new directory to make.
-        :type * args: list of str args
+        This function takes a list of string paths and joins them to create a
+        new directory. If the directory does not exist, it creates the
+        directory.
 
+        Args:
+            *args (list of str): List of string paths to be joined as a new directory.
         """
         _path = cls.join_path(*args)
         if not os.path.isdir(_path):
@@ -35,11 +38,15 @@ class FileOps(object):
 
     @classmethod
     def make_base_dir(cls, *args):
-        """Make new a base directory.
+        """        Make a new base directory.
 
-        :param * args: list of str path to joined as a new base directory to make.
-        :type * args: list of str args
+        This function takes a list of string paths and joins them to create a
+        new base directory. If the base directory already exists, it does
+        nothing. If the base directory does not exist, it creates the directory
+        along with any necessary parent directories.
 
+        Args:
+            *args (list of str): List of string paths to be joined as a new base directory.
         """
         _file = cls.join_path(*args)
         if os.path.isfile(_file):
@@ -50,13 +57,20 @@ class FileOps(object):
 
     @classmethod
     def join_path(cls, *args):
-        """Join list of path and return.
+        """        Join list of paths and return the joined path.
 
-        :param * args: list of str path to be joined.
-        :type * args: list of str args
-        :return: joined path str.
-        :rtype: str
+        This function takes a variable number of string paths and joins them
+        together to form a single path. If only one path is provided, it is
+        returned as is. If multiple paths are provided, they are joined
+        together. If the first path is a local path, it is joined using
+        os.path.join(). If the first path is a URL or S3 path, the paths are
+        concatenated with a '/' separator.
 
+        Args:
+            *args (str): Variable number of string paths to be joined.
+
+        Returns:
+            str: The joined path as a string.
         """
         if len(args) == 1:
             return args[0]
@@ -77,11 +91,16 @@ class FileOps(object):
 
     @classmethod
     def dump_pickle(cls, obj, filename):
-        """Dump a object to a file using pickle.
+        """        Dump an object to a file using pickle.
 
-        :param object obj: target object.
-        :param str filename: target pickle file path.
+        This function takes an object and a file path as input, checks if the
+        file exists, creates the base directory if it doesn't, and then dumps
+        the object to the file using pickle.
 
+        Args:
+            cls: The class instance.
+            obj: The object to be dumped.
+            filename: The path to the pickle file.
         """
         if not os.path.isfile(filename):
             cls.make_base_dir(filename)
@@ -90,12 +109,17 @@ class FileOps(object):
 
     @classmethod
     def load_pickle(cls, filename):
-        """Load a pickle file and return the object.
+        """        Load a pickle file and return the object.
 
-        :param str filename: target pickle file path.
-        :return: return the loaded original object.
-        :rtype: object or None.
+        This function loads a pickle file from the specified path and returns
+        the original object.
 
+        Args:
+            filename (str): The path to the target pickle file.
+
+        Returns:
+            object or None: The loaded original object, or None if the file does not
+                exist.
         """
         if not os.path.isfile(filename):
             return None
@@ -104,11 +128,20 @@ class FileOps(object):
 
     @classmethod
     def copy_folder(cls, src, dst):
-        """Copy a folder from source to destination.
+        """        Copy a folder from source to destination.
 
-        :param str src: source path.
-        :param str dst: destination path.
+        This function copies a folder from the source path to the destination
+        path. If the destination path is empty or None, the function returns
+        without performing any action. If the source is a directory and the
+        destination does not exist, it copies the entire directory recursively.
+        If the source is a file, it copies the file to the destination. If the
+        source is a directory and the destination already exists, it recursively
+        copies the contents of the source directory to the destination
+        directory.
 
+        Args:
+            src (str): The path of the source folder.
+            dst (str): The path of the destination folder.
         """
         if dst is None or dst == "":
             return
@@ -135,11 +168,19 @@ class FileOps(object):
 
     @classmethod
     def copy_file(cls, src, dst):
-        """Copy a file from source to destination.
+        """        Copy a file from source to destination.
 
-        :param str src: source path.
-        :param str dst: destination path.
+        This function copies a file from the source path to the destination
+        path. If the destination path is empty or None, the function returns
+        without performing any action. If the source path contains a colon
+        (':'), it uses the http_download method to download the file. If the
+        source path is an existing file, it copies the file using shutil.copy.
+        If the source path is not an existing file, it logs an error message.
 
+        Args:
+            cls: The class instance.
+            src (str): The path of the source file.
+            dst (str): The path of the destination file.
         """
         if dst is None or dst == "":
             return
@@ -156,15 +197,13 @@ class FileOps(object):
 
     @classmethod
     def download_dataset(cls, src_path, local_path=None):
-        """Download dataset from http or https web site, return path.
+        """        Download dataset from http or https web site and return the final data
+        path.
 
-        :param src_path: the data path
-        :type src_path: str
-        :param local_path: the local path
-        :type local_path: str
-        :raises FileNotFoundError: if the file path is not exist, an error will raise
-        :return: the final data path
-        :rtype: str
+        This function downloads a dataset from a given http or https web site
+        and saves it to the local path. If the source path starts with http://
+        or https://, it downloads the dataset to the specified local path. If
+        the source path is a local file path, it returns the same path.
         """
         if src_path is None:
             raise FileNotFoundError("Dataset path is None, please set dataset path in config file.")
@@ -184,13 +223,7 @@ class FileOps(object):
 
     @classmethod
     def http_download(cls, src, dst, unzip=False):
-        """Download data from http or https web site.
-
-        :param src: the data path
-        :type src: str
-        :param dst: the data path
-        :type dst: str
-        :raises FileNotFoundError: if the file path is not exist, an error will raise
+        """        Download data from an HTTP or HTTPS website.
         """
         from six.moves import urllib
         import fcntl
@@ -222,6 +255,18 @@ class FileOps(object):
 
     @classmethod
     def _untar(cls, src, dst=None):
+        """Extracts the contents of a tar file to a specified destination
+        directory.
+
+        If no destination directory is provided, the files are extracted to the
+        directory containing the tar file.
+
+        Args:
+            src (str): Path to the tar file to be extracted.
+            dst (str?): Destination directory where the contents will be extracted. Defaults to
+                None.
+        """
+
         import tarfile
         if dst is None:
             dst = os.path.dirname(src)
@@ -230,11 +275,15 @@ class FileOps(object):
 
     @classmethod
     def exists(cls, path):
-        """Is folder existed or not.
+        """        Check if a folder or file exists.
 
-        :param folder: folder
-        :type folder: str
-        :return: folder existed or not.
-        :rtype: bool
+        This function checks whether the specified path corresponds to an
+        existing folder or file.
+
+        Args:
+            path (str): The path to the folder or file.
+
+        Returns:
+            bool: True if the folder or file exists, False otherwise.
         """
         return os.path.isdir(path) or os.path.isfile(path)

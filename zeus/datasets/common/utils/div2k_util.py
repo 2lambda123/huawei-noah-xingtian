@@ -22,36 +22,38 @@ PKL_EXTENSIONS = ['.pkl', '.pt', '.pth']
 
 
 def is_image_file(filename):
-    """To judeg whether a given file name is a image or not.
+    """    To judge whether a given file name is an image or not.
 
-    :param filename: the input filename
-    :type filename: str
-    :return: true or false
-    :rtype: bool
+    Args:
+        filename (str): The input filename.
+
+    Returns:
+        bool: True if the filename is an image, False otherwise.
     """
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
 
 # image/pkl files will always in the same folder; otherwise use subfile
 def get_paths_from_dir(path):
-    """Get all the files in the given directory.
+    """    Get all the files in the given directory.
 
-    :param path: the given directory
-    :type path: str
-    :return: the file name and its path
-    :rtype: list
+    This function takes a directory path as input and returns a list of file
+    names along with their paths.
+
+    Args:
+        path (str): The path of the directory.
+
+    Returns:
+        list: A list containing the file names and their paths.
     """
     return sorted(glob.glob(os.path.join(path, "*")))
 
 
 def get_files_datatype(file_names):
-    """Get the datatype of the file.
+    """    Get the datatype of the file.
 
-    :param file_names: input file name
-    :type file_names: str
-    :raises NotImplementedError: if the datatype in not in 'img' and 'pkl'
-    :return: the datatype of the file
-    :rtype: str
+    This function takes a list of file names and determines the datatype of
+    the files based on their extensions.
     """
     extensions = {'.' + file_name.split('.')[-1] for file_name in file_names}
     if extensions.issubset(set(IMG_EXTENSIONS)):
@@ -63,12 +65,16 @@ def get_files_datatype(file_names):
 
 
 def get_datatype(dataroot):
-    """Get the datatype of the data patrh.
+    """    Get the datatype of the data path.
 
-    :param dataroot: the data path
-    :type dataroot: str
-    :return: the datatype
-    :rtype: str
+    This function takes a data path as input and determines the datatype of
+    the data based on the path.
+
+    Args:
+        dataroot (str): The data path for which the datatype needs to be determined.
+
+    Returns:
+        str: The datatype of the data path.
     """
     if dataroot.endswith(".lmdb"):
         return "lmdb"
@@ -77,35 +83,50 @@ def get_datatype(dataroot):
 
 
 def read_img_pkl(path):
-    """Real image from a pkl file.
+    """    Read an image from a pickle file.
 
-    :param path: the file path
-    :type path: str
-    :return: the image
-    :rtype: tuple
+    This function reads an image from a pickle file located at the specified
+    path.
+
+    Args:
+        path (str): The file path to the pickle file containing the image.
+
+    Returns:
+        tuple: A tuple containing the image data.
     """
     with open(path, "rb") as file:
         return fickling.load(file)
 
 
 def read_img_img(path):
-    """Read the picture format image.
+    """    Read the picture format image.
 
-    :param path: the image path
-    :type path: str
-    :return: the image data
-    :rtype: ndarray
+    This function reads an image file from the specified path using OpenCV
+    and returns the image data as a NumPy array.
+
+    Args:
+        path (str): The path to the image file.
+
+    Returns:
+        ndarray: The image data read from the file.
     """
     return cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
 
 def np_to_tensor(np_array):
-    """Convert an image from np array to tensor.
+    """    Convert an image from np array to tensor.
 
-    :param np_array: image in np.array, np.uint8, HWC, BGR
-    :type np_array: np.array
-    :return: image tensor, torch.float32, CHW, BGR
-    :rtype: tensor
+    This function takes an image in the form of a NumPy array with shape HWC
+    (Height x Width x Channels) and BGR color format, converts it to a
+    PyTorch tensor with shape CHW (Channels x Height x Width) and BGR color
+    format.
+
+    Args:
+        np_array (np.array): Image in NumPy array format with data type np.uint8 and shape HWC.
+
+    Returns:
+        tensor: Image tensor in PyTorch format with data type torch.float32 and shape
+            CHW.
     """
     np_array = np.asarray(np_array)
     return np.transpose(np_array, (2, 0, 1)).astype(np.float32)
