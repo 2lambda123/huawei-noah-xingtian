@@ -43,7 +43,15 @@ class Cityscapes(Dataset):
         self.dataset_init()
 
     def _init_transforms(self):
-        """Initialize transforms."""
+        """        Initialize transforms.
+
+        This function initializes a list of transforms based on the provided
+        arguments. It checks for specific transform types in the arguments and
+        creates instances of those transforms.
+
+        Returns:
+            list: A list of initialized transform instances.
+        """
         result = list()
         if "Rescale" in self.args:
             import logging
@@ -64,13 +72,25 @@ class Cityscapes(Dataset):
         return result
 
     def _get_cls(self, _name):
+        """Get a class object based on the provided name for transformation.
+
+        This function retrieves a class object from the ClassFactory for
+        transformation based on the given name.
+
+        Args:
+            _name (str): The name of the class to retrieve.
+
+        Returns:
+            class: The class object for transformation.
+        """
+
         return ClassFactory.get_cls(ClassType.TRANSFORM, _name)
 
     def dataset_init(self):
-        """Construct method.
+        """        Construct method.
 
-        If both data_dir and label_dir are provided, then use data_dir and label_dir
-        Otherwise use root_dir and list_file.
+        If both data_dir and label_dir are provided, then use data_dir and
+        label_dir. Otherwise, use root_dir and list_file.
         """
         if "data_dir" in self.args and "label_dir" in self.args:
             self.args.data_dir = FileOps.download_dataset(self.args.data_dir)
@@ -97,20 +117,26 @@ class Cityscapes(Dataset):
             self.read_fn = self._read_item_pickle
 
     def __len__(self):
-        """Get the length of the dataset.
+        """        Get the length of the dataset.
 
-        :return: the length of the dataset
-        :rtype: int
+        This method returns the length of the dataset by counting the number of
+        data files present.
+
+        Returns:
+            int: The length of the dataset.
         """
         return len(self.data_files)
 
     def __getitem__(self, index):
-        """Get an item of the dataset according to the index.
+        """        Get an item of the dataset according to the index.
 
-        :param index: index
-        :type index: int
-        :return: an item of the dataset according to the index
-        :rtype: dict, {'data': xx, 'mask': xx, 'name': name}
+        Args:
+            index (int): Index of the item to retrieve.
+
+        Returns:
+            tuple: A tuple containing image and mask.
+                - image (numpy.ndarray): The image data.
+                - mask (numpy.ndarray): The mask data.
         """
         image, label = self.read_fn(index)
         image_name = self.data_files[index].split("/")[-1].split(".")[0]
@@ -122,12 +148,8 @@ class Cityscapes(Dataset):
 
     @staticmethod
     def _get_datatype_files(file_paths):
-        """Check file extensions in file_paths to decide whether they are images or pkl.
-
-        :param file_paths: a list of file names
-        :type file_paths: list of str
-        :return image, pkl or None according to the type of files
-        :rtype: str
+        """        Check file extensions in file_paths to decide whether they are images or
+        pkl.
         """
         IMG_EXTENSIONS = {'jpg', 'JPG', 'jpeg', 'JPEG',
                           'png', 'PNG', 'ppm', 'PPM', 'bmp', 'BMP'}
@@ -142,10 +164,11 @@ class Cityscapes(Dataset):
             raise Exception("Invalid file extension")
 
     def _get_datatype(self):
-        """Check the datatype of all data.
+        """        Check the datatype of all data.
 
-        :return image, pkl or None
-        :rtype: str
+        This function checks the datatype of all data files and label files
+        provided. It compares the datatype of data files with label files and
+        ensures they are of the same type.
         """
         type_data = self._get_datatype_files(self.data_files)
         type_labels = self._get_datatype_files(self.label_files)
@@ -156,24 +179,35 @@ class Cityscapes(Dataset):
             raise Exception("Images and masks must be both image or pkl!")
 
     def _read_item_image(self, index):
-        """Read image and label in "image" format.
+        """        Read image and label in "image" format.
 
-        :param index: index
-        :type index: int
-        :return: image in np.array, HWC, bgr; label in np.array, HW
-        :rtype: tuple of np.array
+        This function reads an image and its corresponding label in "image"
+        format. It reads the image and label files using OpenCV and returns them
+        as numpy arrays.
+
+        Args:
+            index (int): The index of the item to read.
+
+        Returns:
+            tuple of np.array: A tuple containing the image as a numpy array in HWC
+                format (bgr)
+            and the label as a numpy array in HW format.
         """
         image = cv2.imread(self.data_files[index], cv2.IMREAD_COLOR)
         label = cv2.imread(self.label_files[index], cv2.IMREAD_GRAYSCALE)
         return image, label
 
     def _read_item_pickle(self, index):
-        """Read image and label in "pkl" format.
+        """        Read image and label in "pkl" format.
 
-        :param index: index
-        :type index: int
-        :return: image in np.array, HWC, bgr; label in np.array, HW
-        :rtype: tuple of np.array
+        This function reads an image and label stored in "pkl" format.
+
+        Args:
+            index (int): Index of the item to read.
+
+        Returns:
+            tuple of np.array: A tuple containing the image in np.array format (HWC,
+                bgr) and the label in np.array format (HW).
         """
         with open(self.data_files[index], "rb") as file:
             image = fickling.load(file)
@@ -183,10 +217,13 @@ class Cityscapes(Dataset):
 
     @property
     def input_size(self):
-        """Input size of Cityspace.
+        """        Get the input size of Cityspace.
 
-        :return: the input size
-        :rtype: int
+        This function returns the size of the input data along the second
+        dimension.
+
+        Returns:
+            int: The size of the input data along the second dimension.
         """
         _shape = self.data.shape
         return _shape[1]
